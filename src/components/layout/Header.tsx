@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router';
 import { useTheme } from '@/hooks/useTheme';
+import { useAuthStore } from '@/stores/authStore';
 import { APP_NAME } from '@/constants';
 
 const links = [
@@ -14,6 +15,7 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const isAuthenticated = useAuthStore((s) => s.accessToken !== null);
 
   return (
     <header className="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
@@ -29,6 +31,12 @@ export default function Header() {
               {l.label}
             </NavLink>
           ))}
+          <NavLink
+            to={isAuthenticated ? '/dashboard' : '/login'}
+            className="rounded-lg bg-primary-600 px-4 py-2 text-white hover:bg-primary-700"
+          >
+            {isAuthenticated ? 'Кабінет' : 'Увійти'}
+          </NavLink>
           <button type="button" onClick={toggleTheme} aria-label="Перемкнути тему">
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
@@ -64,6 +72,13 @@ export default function Header() {
               {l.label}
             </NavLink>
           ))}
+          <NavLink
+            to={isAuthenticated ? '/dashboard' : '/login'}
+            className={linkClass}
+            onClick={() => setIsOpen(false)}
+          >
+            {isAuthenticated ? 'Кабінет' : 'Увійти'}
+          </NavLink>
         </div>
       )}
     </header>

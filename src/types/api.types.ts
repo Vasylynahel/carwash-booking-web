@@ -46,14 +46,7 @@ export interface Booking {
   services: Service[];
 }
 
-export interface Pagination {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-  hasMore: boolean;
-}
-
+// Формат списків у API
 export interface PaginatedResponse<T> {
   items: T[];
   total: number;
@@ -61,10 +54,9 @@ export interface PaginatedResponse<T> {
   limit: number;
   pages: number;
 }
-
 export interface AuthResponse {
   user: User;
-  tokens: { accessToken: string; refreshToken: string };
+  tokens: { access_token: string; refreshToken: string };
 }
 
 // FastAPI віддає помилки в полі detail (рядок або масив помилок валідації)
