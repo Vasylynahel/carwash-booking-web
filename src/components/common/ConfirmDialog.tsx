@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import Modal from './Modal';
 import Button from './Button';
 
 interface ConfirmDialogProps {
@@ -11,8 +11,8 @@ interface ConfirmDialogProps {
   onCancel: () => void;
 }
 
-// Нативний <dialog>: фокус, Escape та затемнення дає сам браузер.
-// Замість window.confirm(): виглядає як решта застосунку й не блокує потік.
+// Заміна window.confirm(): доступний з клавіатури, у стилі застосунку, не блокує потік.
+// Побудований на Modal (Headless UI), тому фокус і Escape обробляє бібліотека.
 export default function ConfirmDialog({
   isOpen,
   title,
@@ -22,25 +22,8 @@ export default function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
-  const ref = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) return;
-    if (isOpen && !dialog.open) dialog.showModal();
-    if (!isOpen && dialog.open) dialog.close();
-  }, [isOpen]);
-
   return (
-    <dialog
-      ref={ref}
-      onCancel={(e) => {
-        e.preventDefault(); // закриття керується станом батька
-        onCancel();
-      }}
-      className="m-auto w-full max-w-sm rounded-xl bg-white p-6 text-gray-900 shadow-xl backdrop:bg-black/30 dark:bg-gray-800 dark:text-gray-100"
-    >
-      <h2 className="mb-2 text-xl font-bold">{title}</h2>
+    <Modal isOpen={isOpen} onClose={onCancel} title={title} size="sm">
       <p className="mb-6 text-gray-600 dark:text-gray-300">{message}</p>
       <div className="flex justify-end gap-3">
         <Button variant="secondary" onClick={onCancel}>
@@ -50,6 +33,6 @@ export default function ConfirmDialog({
           {confirmText}
         </Button>
       </div>
-    </dialog>
+    </Modal>
   );
 }

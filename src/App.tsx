@@ -1,89 +1,101 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import Layout from '@/components/layout/Layout';
-import DashboardLayout from '@/components/layout/DashboardLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import Loading from '@/components/common/Loading';
 import HomePage from '@/pages/HomePage';
-import AboutPage from '@/pages/AboutPage';
 import NotFoundPage from '@/pages/NotFoundPage';
-import LoginPage from '@/pages/LoginPage';
-import RegisterPage from '@/pages/RegisterPage';
-import DashboardPage from '@/pages/DashboardPage';
-import ServicesListPage from '@/pages/ServicesListPage';
-import ServiceDetailPage from '@/pages/ServiceDetailPage';
-import ServiceFormPage from '@/pages/ServiceFormPage';
-import CarsListPage from '@/pages/CarsListPage';
-import CarFormPage from '@/pages/CarFormPage';
+
+// Кожна lazy-сторінка потрапляє в окремий файл (chunk) і вантажиться лише за потреби.
+// В основному пакеті лишається лише головна. Кабінет (із Socket.io) і форми (Zod, React Hook Form)
+// вантажаться, коли користувач до них доходить.
+const DashboardLayout = lazy(() => import('@/components/layout/DashboardLayout'));
+const LoginPage = lazy(() => import('@/pages/LoginPage'));
+const RegisterPage = lazy(() => import('@/pages/RegisterPage'));
+const AboutPage = lazy(() => import('@/pages/AboutPage'));
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
+const ServicesListPage = lazy(() => import('@/pages/ServicesListPage'));
+const ServiceDetailPage = lazy(() => import('@/pages/ServiceDetailPage'));
+const ServiceFormPage = lazy(() => import('@/pages/ServiceFormPage'));
+const ServicesFeedPage = lazy(() => import('@/pages/ServicesFeedPage'));
+const CarsListPage = lazy(() => import('@/pages/CarsListPage'));
+const CarFormPage = lazy(() => import('@/pages/CarFormPage'));
+const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Публічні сторінки із шапкою й футером */}
-        <Route element={<Layout />}>
-          <Route index element={<HomePage />} />
-          <Route path="about" element={<AboutPage />} />
-        </Route>
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          {/* Публічні сторінки із шапкою й футером */}
+          <Route element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="about" element={<AboutPage />} />
+          </Route>
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
-        {/* Кабінет: усе всередині доступне лише після входу */}
-        <Route
-          element={
-            <ProtectedRoute>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="dashboard" element={<DashboardPage />} />
-
-          <Route path="services" element={<ServicesListPage />} />
+          {/* Кабінет: усе всередині доступне лише після входу */}
           <Route
-            path="services/create"
             element={
-              <ProtectedRoute roles={['admin']}>
-                <ServiceFormPage />
+              <ProtectedRoute>
+                <DashboardLayout />
               </ProtectedRoute>
             }
-          />
-          <Route path="services/:id" element={<ServiceDetailPage />} />
-          <Route
-            path="services/:id/edit"
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <ServiceFormPage />
-              </ProtectedRoute>
-            }
-          />
+          >
+            <Route path="dashboard" element={<DashboardPage />} />
 
-          <Route
-            path="cars"
-            element={
-              <ProtectedRoute roles={['client']}>
-                <CarsListPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="cars/create"
-            element={
-              <ProtectedRoute roles={['client']}>
-                <CarFormPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="cars/:id/edit"
-            element={
-              <ProtectedRoute roles={['client']}>
-                <CarFormPage />
-              </ProtectedRoute>
-            }
-          />
-        </Route>
+            <Route path="services" element={<ServicesListPage />} />
+            <Route path="catalog" element={<ServicesFeedPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route
+              path="services/create"
+              element={
+                <ProtectedRoute roles={['admin']}>
+                  <ServiceFormPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="services/:id" element={<ServiceDetailPage />} />
+            <Route
+              path="services/:id/edit"
+              element={
+                <ProtectedRoute roles={['admin']}>
+                  <ServiceFormPage />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+            <Route
+              path="cars"
+              element={
+                <ProtectedRoute roles={['client']}>
+                  <CarsListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="cars/create"
+              element={
+                <ProtectedRoute roles={['client']}>
+                  <CarFormPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="cars/:id/edit"
+              element={
+                <ProtectedRoute roles={['client']}>
+                  <CarFormPage />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

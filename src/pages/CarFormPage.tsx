@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -10,7 +10,9 @@ import Breadcrumbs from '@/components/common/Breadcrumbs';
 import Button from '@/components/common/Button';
 import FormField from '@/components/common/FormField';
 import Input from '@/components/common/Input';
+import SearchSelect from '@/components/common/SearchSelect';
 import Skeleton from '@/components/common/Skeleton';
+import { CAR_BRANDS } from '@/constants/cars';
 
 interface CarFormProps {
   defaultValues?: Partial<CarFormInput>;
@@ -22,6 +24,7 @@ interface CarFormProps {
 function CarForm({ defaultValues, isSaving, onSubmit, onCancel }: CarFormProps) {
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<CarFormInput, unknown, CarFormData>({
@@ -36,7 +39,20 @@ function CarForm({ defaultValues, isSaving, onSubmit, onCancel }: CarFormProps) 
       noValidate
     >
       <FormField label="Марка" error={errors.brand?.message}>
-        <Input placeholder="Toyota" {...register('brand')} />
+        <Controller
+          name="brand"
+          control={control}
+          render={({ field }) => (
+            <SearchSelect
+              aria-label="Марка"
+              placeholder="Почніть вводити: Toyota"
+              options={CAR_BRANDS}
+              value={field.value ?? ''}
+              onChange={field.onChange}
+              allowCustom
+            />
+          )}
+        />
       </FormField>
       <FormField label="Модель" error={errors.model?.message}>
         <Input placeholder="Camry" {...register('model')} />

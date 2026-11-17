@@ -16,8 +16,11 @@ import DataTable, { type Column } from '@/components/common/DataTable';
 import Input from '@/components/common/Input';
 import Pagination from '@/components/common/Pagination';
 import { TableSkeleton } from '@/components/common/Skeleton';
+import { usePageTitle } from '@/hooks/usePageTitle';
+import { useSocketEvent } from '@/hooks/useSocketEvent';
 
 export default function ServicesListPage() {
+  usePageTitle('Послуги');
   const isAdmin = useAuthStore((s) => s.user?.role === 'admin');
   const queryClient = useQueryClient();
 
@@ -27,6 +30,11 @@ export default function ServicesListPage() {
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
   const [toDelete, setToDelete] = useState<Service | null>(null);
   const debouncedSearch = useDebounce(search);
+
+  // Сервер повідомив про зміни: список перезавантажується з актуальними даними
+  useSocketEvent('services:changed', () =>
+    queryClient.invalidateQueries({ queryKey: ['services'] })
+  );
 
   // Ключ містить усі параметри: зміна сторінки, пошуку чи сортування сама запускає новий запит
   const { data, isPending, isError, error } = useQuery({

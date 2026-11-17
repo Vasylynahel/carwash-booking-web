@@ -12,8 +12,10 @@ import { getErrorMessage } from '@/utils/errors';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import FormField from '@/components/common/FormField';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function RegisterPage() {
+  usePageTitle('Реєстрація');
   const navigate = useNavigate();
   const {
     register,

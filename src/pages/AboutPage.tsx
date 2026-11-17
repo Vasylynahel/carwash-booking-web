@@ -1,4 +1,5 @@
 import Card from '@/components/common/Card';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const points = [
   {
@@ -16,6 +17,7 @@ const points = [
 ];
 
 export default function AboutPage() {
+  usePageTitle('Про нас');
   return (
     <div>
       <h1 className="mb-4 text-3xl font-bold">Про нас</h1>

@@ -9,8 +9,10 @@ import { getErrorMessage } from '@/utils/errors';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import FormField from '@/components/common/FormField';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function LoginPage() {
+  usePageTitle('Вхід');
   const navigate = useNavigate();
   const location = useLocation();
   const login = useAuthStore((s) => s.login);

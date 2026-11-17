@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /cars
+Disallow: /profile
+
+Sitemap: https://your-app.vercel.app/sitemap.xml
