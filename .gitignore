@@ -27,3 +27,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Карта складу пакета (npm run analyze)
+stats.html

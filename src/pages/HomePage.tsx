@@ -6,6 +6,7 @@ import Badge from '@/components/common/Badge';
 import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
 import Loading from '@/components/common/Loading';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 // Запасні дані, якщо сервер ще не запущено: щоб головна не була порожньою
 const demoServices: Service[] = [
@@ -36,6 +37,7 @@ const demoServices: Service[] = [
 ];
 
 export default function HomePage() {
+  usePageTitle('Запис на мийку');
   const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDemo, setIsDemo] = useState(false);

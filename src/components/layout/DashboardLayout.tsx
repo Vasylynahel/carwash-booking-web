@@ -1,11 +1,16 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
 import { useAuthStore } from '@/stores/authStore';
 import { useTheme } from '@/hooks/useTheme';
 import { APP_NAME } from '@/constants';
+import { usePresenceEvents } from '@/hooks/usePresenceEvents';
+import { useSocketConnection } from '@/hooks/useSocketConnection';
 import type { Role } from '@/types/api.types';
 import Button from '@/components/common/Button';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import NotificationBell from '@/components/NotificationBell';
+import { ConnectionStatus, OnlineDot } from '@/components/OnlineIndicator';
+import PageTransition from '@/components/common/PageTransition';
 
 interface NavItem {
   to: string;
@@ -17,6 +22,8 @@ const navItems: NavItem[] = [
   { to: '/dashboard', label: 'Огляд' },
   { to: '/cars', label: 'Мої автомобілі', roles: ['client'] },
   { to: '/services', label: 'Послуги' },
+  { to: '/catalog', label: 'Каталог' },
+  { to: '/profile', label: 'Профіль' },
 ];
 
 export default function DashboardLayout() {
@@ -25,6 +32,10 @@ export default function DashboardLayout() {
   const logout = useAuthStore((s) => s.logout);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useSocketConnection(); // одне з'єднання Socket.io на весь кабінет
+  usePresenceEvents();
 
   const handleLogout = () => {
     logout();
@@ -81,7 +92,12 @@ export default function DashboardLayout() {
             ☰
           </button>
           <div className="ml-auto flex items-center gap-4">
-            <span className="hidden text-sm text-gray-500 sm:inline">{user?.full_name}</span>
+            <ConnectionStatus />
+            <NotificationBell />
+            <span className="hidden items-center gap-2 text-sm text-gray-500 sm:flex">
+              {user && <OnlineDot userId={user.id} />}
+              {user?.full_name}
+            </span>
             <button type="button" onClick={toggleTheme} aria-label="Перемкнути тему">
               {theme === 'dark' ? '☀️' : '🌙'}
             </button>
@@ -93,7 +109,9 @@ export default function DashboardLayout() {
 
         <main className="flex-1 p-4 md:p-8">
           <ErrorBoundary>
-            <Outlet />
+            <PageTransition key={location.pathname}>
+              <Outlet />
+            </PageTransition>
           </ErrorBoundary>
         </main>
       </div>

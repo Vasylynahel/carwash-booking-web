@@ -15,13 +15,19 @@ import ConfirmDialog from '@/components/common/ConfirmDialog';
 import Input from '@/components/common/Input';
 import Pagination from '@/components/common/Pagination';
 import { GridSkeleton } from '@/components/common/Skeleton';
+import { usePageTitle } from '@/hooks/usePageTitle';
+import { useSocketEvent } from '@/hooks/useSocketEvent';
 
 export default function CarsListPage() {
+  usePageTitle('Мої автомобілі');
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [toDelete, setToDelete] = useState<Car | null>(null);
   const debouncedSearch = useDebounce(search);
+
+  // Сервер повідомив про зміни: список перезавантажується з актуальними даними
+  useSocketEvent('cars:changed', () => queryClient.invalidateQueries({ queryKey: ['cars'] }));
 
   const { data, isPending, isError, error } = useQuery({
     queryKey: ['cars', { page, search: debouncedSearch }],

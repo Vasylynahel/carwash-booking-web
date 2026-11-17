@@ -12,3 +12,12 @@
   --color-primary-900: #164e63;
   --font-sans: 'Inter', system-ui, sans-serif;
 }
+
+/* Календар react-day-picker: кольори під тему застосунку, у темній темі світлий текст */
+.rdp-root {
+  --rdp-accent-color: var(--color-primary-600);
+  --rdp-accent-background-color: var(--color-primary-100);
+}
+.dark .rdp-root {
+  --rdp-accent-background-color: var(--color-primary-900);
+}
